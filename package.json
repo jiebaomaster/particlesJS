@@ -1,0 +1,16 @@
+{
+  "name": "particles",
+  "version": "1.0.0",
+  "description": "A lightweight es6 lib for creating particles.",
+  "main": "particles.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "es6",
+    "canvas",
+    "particles"
+  ],
+  "author": "jiebaomaster",
+  "license": "MIT"
+}
