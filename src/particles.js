@@ -1,3 +1,8 @@
+import {
+  requestAnimFrame,
+  cancelRequestAnimFrame
+} from './utils'
+
 // 画图
 class Paint {
   // 画圆
@@ -67,7 +72,7 @@ class ParticlesJS extends Paint {
    * @param {string} targetEleId 目标元素id
    * @param {object} config 配置选项
    */
-  constructor(targetEleId, config) {
+  constructor(targetEleId = '', config = {}) {
     super()
 
     let defaultConfig = { // 默认设置对象
@@ -115,6 +120,11 @@ class ParticlesJS extends Paint {
       },
     }
 
+    // 如果用户设置不是一个对象则将它转换成空对象
+    if (Object.prototype.toString.call(config) !== '[object Object]') {
+      config = {}
+    }
+
     // 将用户设置和默认设置合并
     this.config = Object.assign({}, defaultConfig, config)
 
@@ -122,6 +132,10 @@ class ParticlesJS extends Paint {
      *  在选中元素下创建一个canvas画布
      */
     let targetEle = document.getElementById(targetEleId)
+    if (!targetEle) { // 目标元素不存在时退出
+      console.warn('目标元素不存在')
+      return
+    }
     targetEle.innerHTML = '' // 清空根元素
     let canvasEle = document.createElement('canvas') // 在目标元素下新建canvas元素
 
@@ -210,8 +224,6 @@ class ParticlesJS extends Paint {
     }
   }
 
-
-
   move() {
     let particlesConfig = this.config.particles
     this.ctx.clearRect(0, 0, this.w, this.h) // 清空画布
@@ -272,7 +284,7 @@ class ParticlesJS extends Paint {
    * @param {boolean} useRequestAnimationFrame 是否使用requestAnimationFrame函数动画
    * @param {number} time 在使用setInterval函数动画的情况下，重复时间间隔
    */
-  start(useRequestAnimationFrame = true, time = 16) {
+  start(time = 16) {
 
     // 浏览器大小改变时改变画布的大小
     window.addEventListener('resize', () => {
@@ -286,15 +298,12 @@ class ParticlesJS extends Paint {
     // 开始动画
     let animateHandle = this.move.bind(this) // 显式绑定this，防止在动画函数中执行时丢失this    
 
-    // 若浏览器支持 requestAnimationFrame 函数且配置使用该函数，则使用该函数渲染
-    if (window.requestAnimationFrame && useRequestAnimationFrame) {
-      let animate = function() {
-        animateHandle()
-        window.requestAnimationFrame(animate)
-      }
-      window.requestAnimationFrame(animate)
-    } else {
-      setInterval(animateHandle, time)
+    let animate = function() {
+      animateHandle()
+      requestAnimFrame(animate)
     }
+    requestAnimFrame(animate)
   }
 }
+
+export default ParticlesJS
